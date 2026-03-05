@@ -3,7 +3,8 @@ pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
   example: example.html
-last_built: 2026-03-05T19:56Z
+  plot_xray_cat: plot_xray_cat.html
+last_built: 2026-03-05T21:24Z
 urls:
   reference: https://uskovgs.github.io/ggsky/reference
   article: https://uskovgs.github.io/ggsky/articles
