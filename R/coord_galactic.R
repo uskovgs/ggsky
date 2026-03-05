@@ -16,13 +16,13 @@ CoordGalactic <- ggplot2::ggproto(
     )
   },
 
-  # ПРОЕКЦИЯ ДАННЫХ: (ℓ,b) [deg] -> Hammer -> npc, c отражением X
+  # DATA PROJECTION: (l,b) [deg] -> Hammer -> npc, with X reflection
   transform = function(self, data, panel_params) {
     if (!nrow(data) || is.null(data$x) || is.null(data$y)) return(data)
     lon_deg <- (as.numeric(data$x) %% 360)
     lat_deg <- pmin(90, pmax(-90, as.numeric(data$y)))
     p  <- proj_hammer(rad(lon_deg), rad(lat_deg))   # lon0 = 0°
-    np <- to_npc(-p$x, p$y)                         # зеркалим X
+    np <- to_npc(-p$x, p$y)                         # mirror X
     data$x <- np$x; data$y <- np$y
     data
   },
@@ -30,13 +30,13 @@ CoordGalactic <- ggplot2::ggproto(
     if (!nrow(data)) return(data)
     max_deg <- self$munch_deg %||% 1
 
-    # 1) дискретизируем рёбра в (ℓ,b)
+    # 1) discretize edges in (l,b)
     seg <- .gal_segmentize(
       data.frame(x = data$x, y = data$y, group = data$group %||% 1L),
       max_deg = max_deg
     )
 
-    # 2) разбиваем по NA на реальные подгруппы (geom_polygon игнорит NA)
+    # 2) split by NA into real subgroups (geom_polygon ignores NA)
     .split_by_na_groups <- function(df) {
       if (!nrow(df)) return(list(df))
       br <- is.na(df$x) | is.na(df$y)
@@ -47,12 +47,12 @@ CoordGalactic <- ggplot2::ggproto(
     }
     subs <- .split_by_na_groups(seg)
 
-    # 3) перенумеруем group, чтобы куски не сшивались хордой
+    # 3) renumber group so pieces are not stitched by a chord
     base <- as.integer((data$group %||% 1L)[1])
     parts <- Map(function(df, k) { df$group <- base*1000L + k; df }, subs, seq_along(subs))
     data2 <- do.call(rbind, parts)
 
-    # 4) проецируем в npc с нашим transform()
+    # 4) project to npc using our transform()
     self$transform(
       data.frame(x = data2$x, y = data2$y, group = data2$group),
       panel_params
@@ -69,7 +69,7 @@ CoordGalactic <- ggplot2::ggproto(
     list(x = c(0, 360), y = c(-90, 90))
   },
 
-  # Hammer имеет соотношение ширина:высота = 2:1, значит h/w = 0.5.
+  # Hammer has width:height ratio 2:1, so h/w = 0.5.
   aspect    = function(self, panel_params) 0.5,
   is_linear = function() FALSE,
   range     = function(self, panel_params) list(x = panel_params$x_range, y = panel_params$y_range),
@@ -95,7 +95,7 @@ CoordGalactic <- ggplot2::ggproto(
   },
 
   render_fg = function(self, panel_params, theme) {
-    # стили из темы (ось X для долгот, ось Y для широт)
+    # styles from theme (X axis for longitudes, Y axis for latitudes)
     elx <- .calc_el("axis.text.x", theme)
     ely <- .calc_el("axis.text.y", theme)
     el_plot_bg <- .calc_el("plot.background", theme)

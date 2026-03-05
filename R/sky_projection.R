@@ -1,8 +1,8 @@
-# центр проекции: 0° (ноль по центру, шов на ±180°)
+# projection center: 0° (zero at center, seam at ±180°)
 .center_deg <- 0
 .center_rad <- 0
 
-# Hammer–Aitoff (все аргументы в радианах), lon0 — центр
+# Hammer-Aitoff (all arguments in radians), lon0 is the center
 proj_hammer <- function(lon, lat, lon0 = .center_rad) {
   dl <- wrap_pi(lon - lon0)
   D  <- sqrt(pmax(1 + cos(lat)*cos(dl/2), .Machine$double.eps))
@@ -11,7 +11,7 @@ proj_hammer <- function(lon, lat, lon0 = .center_rad) {
   list(x = x, y = y)
 }
 
-# native -> npc: X и Y масштабируем отдельно, чтобы эллипс касался границ панели.
+# native -> npc: scale X and Y separately so the ellipse touches panel bounds.
 to_npc <- function(x, y) {
   list(
     x = 0.5 + x / (4 * sqrt(2)),

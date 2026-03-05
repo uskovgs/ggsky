@@ -1,4 +1,4 @@
-# кратчайшая разница долгот в [-180, 180]
+# shortest longitude difference in [-180, 180]
 .short_dlon <- function(l2, l1) {
   d <- ((l2 - l1 + 540) %% 360) - 180
   ifelse(d == -180, 180, d)
@@ -26,7 +26,7 @@
   so <- sin(omega)
 
   if (abs(so) < 1e-10) {
-    # Почти антиподы: устойчивый fallback через нормализацию линейной смеси.
+    # Nearly antipodal: stable fallback via normalized linear interpolation.
     m <- vapply(t, function(tt) (1 - tt) * v1 + tt * v2, numeric(3))
     den <- sqrt(colSums(m * m))
     m <- sweep(m, 2, den, "/")
@@ -44,7 +44,7 @@
   list(lon = lon, lat = lat)
 }
 
-# разрезать траекторию по шву (ℓ = 180°) — вставить NA где переходим через шов
+# split a path at the seam (l = 180°): insert NA at seam crossings
 .split_on_seam <- function(lon, lat, eps = 1e-6) {
   nudge_part <- function(lon_part) {
     if (length(lon_part) < 2) return(lon_part)
@@ -75,7 +75,7 @@
   out
 }
 
-# Мунчер для путей/полигонов: сегменты по большим окружностям (great-circle).
+# Muncher for paths/polygons: great-circle segmentation.
 .gal_segmentize <- function(data, max_deg = 1) {
   if (!nrow(data)) return(data)
   if (is.null(data$group)) data$group <- 1L
@@ -98,7 +98,7 @@
       lon <- gc$lon
       lat <- gc$lat
 
-      parts <- .split_on_seam(lon, lat)      # аккуратный разрез по шву
+      parts <- .split_on_seam(lon, lat)      # clean seam split
       for (j in seq_along(parts)) {
         p <- parts[[j]]
         out[[length(out) + 1]] <- data.frame(x = p$lon, y = p$lat, group = g$group[1])
@@ -114,7 +114,7 @@
   do.call(rbind, pieces)
 }
 
-# Сегментация layer-data для GeomPath с сохранением эстетик.
+# Segment layer data for GeomPath while preserving aesthetics.
 .gal_segmentize_layer <- function(data, max_deg = 1) {
   if (!nrow(data)) return(data)
   if (is.null(data$group)) data$group <- 1L

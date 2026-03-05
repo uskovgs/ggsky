@@ -1,5 +1,5 @@
-# ---- primitives (ВСЁ в npc) --------------------------------------------------
-# (!) Везде зеркалим X: используем -p$x, чтобы «вправо» шли 359,358,...
+# ---- primitives (all in npc) -------------------------------------------------
+# (!) Mirror X everywhere: use -p$x so 359,358,... go to the right.
 grob_outline <- function(eps = 1e-6, n = 2000, gp = grid::gpar(col = "black", lwd = 1)) {
   b  <- seq(-90, 90, length.out = n)
   lL <- (.center_deg - 180 + eps) %% 360
@@ -36,8 +36,8 @@ grob_outside_mask <- function(eps = 1e-6, n = 2000, inset = 0, gp = grid::gpar(f
   pR <- proj_hammer(rad(lR), rad(b))
   npL <- to_npc(-pL$x, pL$y)
   npR <- to_npc(-pR$x, pR$y)
-  # Внешний контур делаем сильно больше панели, чтобы маска работала
-  # даже при coord(clip = "off"), когда геомы могут выходить за [0,1] npc.
+  # Make the outer contour much larger than the panel so masking works
+  # even with coord(clip = "off"), when geoms can go outside [0,1] npc.
   x_outer <- c(-5, 6, 6, -5, -5)
   y_outer <- c(-5, -5, 6, 6, -5)
   x_ell <- c(npL$x, rev(npR$x), npL$x[1])
@@ -87,7 +87,7 @@ grob_meridian <- function(l_deg, eps = 1e-6, n = 361, gp = grid::gpar()) {
   polylineGrob(unit(np$x, "npc"), unit(np$y, "npc"), gp = gp)
 }
 
-# ---- labels (в npc) ----------------------------------------------------------
+# ---- labels (in npc) ---------------------------------------------------------
 grob_labels <- function(lat_labels,
                         lon_labels_abs = waiver(),
                         major_step = 30,
@@ -95,8 +95,8 @@ grob_labels <- function(lat_labels,
                         lon_label_fn = function(v) paste0(v, "°"),
                         gp_lon = grid::gpar(col = "grey25"),
                         gp_lat = grid::gpar(col = "grey25"),
-                        off_lon = 0.025,   # вниз от экватора (npc)
-                        off_lat = 0.035) { # наружу от контура (npc)
+                        off_lon = 0.025,   # below the equator (npc)
+                        off_lat = 0.035) { # outward from the outline (npc)
   lon_text_grob <- function(labs_abs) {
     p  <- proj_hammer(rad(labs_abs), rad(0))
     np <- to_npc(-p$x, p$y)
@@ -132,7 +132,7 @@ grob_labels <- function(lat_labels,
     if (!length(parts)) ggplot2::zeroGrob() else do.call(grobTree, parts)
   }
 
-  # ----- ДОЛГОТЫ -----
+  # ----- LONGITUDES -----
   if (is.null(lon_labels_abs)) {
     grob_lons <- ggplot2::zeroGrob()
   } else if (is_waiver(lon_labels_abs)) {
@@ -144,7 +144,7 @@ grob_labels <- function(lat_labels,
     grob_lons <- lon_text_grob(labs_abs)
   }
 
-  # ----- ШИРОТЫ -----
+  # ----- LATITUDES -----
   lat_mid  <- lat_labels[abs(lat_labels) < 90]
   lat_pole <- lat_labels[abs(lat_labels) == 90]
 
@@ -174,7 +174,7 @@ grob_labels <- function(lat_labels,
 }
 
 
-# ---- grid assembler (уважает theme и waiver/NULL) ----------------------------
+# ---- grid assembler (respects theme and waiver/NULL) -------------------------
 grob_grid <- function(lat_breaks_major = waiver(), lat_breaks_minor = waiver(),
                       lon_breaks_major_abs = waiver(), lon_breaks_minor_abs = waiver(),
                       eps = 1e-6, default_major = 30, default_minor = 15,
@@ -227,7 +227,7 @@ grob_grid <- function(lat_breaks_major = waiver(), lat_breaks_minor = waiver(),
   lat_lines_minor <- .setdiff_near(lat_lines_minor, lat_labels)
   lat_lines_minor <- lat_lines_minor[abs(lat_lines_minor) < 90]
 
-  # LON majors (относительно .center_deg)
+  # LON majors (relative to .center_deg)
   rel_maj <- .rel_ticks(default_major, eps)
   lon_major <- resolve_lon(lon_breaks_major_abs, default_major)
 
