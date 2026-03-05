@@ -133,7 +133,7 @@ scale_eq_dec <- function(breaks = ggplot2::waiver(), minor_breaks = ggplot2::wai
 }
 
 #' @export
-ggplot_add.CoordEquatorial <- function(object, plot, object_name) {
+ggplot_add.CoordEquatorial <- function(object, plot, ...) {
   plot <- .ggplot_add_coord(object, plot)
   plot$labels$x <- ""
   plot$labels$y <- ""
@@ -148,7 +148,7 @@ ggplot_add.CoordEquatorial <- function(object, plot, object_name) {
 }
 
 #' @export
-ggplot_add.sky_scale_dec <- function(object, plot, object_name) {
+ggplot_add.sky_scale_dec <- function(object, plot, ...) {
   if (!inherits(plot$coordinates, "CoordEquatorial")) plot <- plot + coord_equatorial()
   plot$coordinates$lat_breaks_major <- object$breaks
   plot$coordinates$lat_breaks_minor <- object$minor_breaks
@@ -156,7 +156,7 @@ ggplot_add.sky_scale_dec <- function(object, plot, object_name) {
 }
 
 #' @export
-ggplot_add.sky_scale_ra <- function(object, plot, object_name) {
+ggplot_add.sky_scale_ra <- function(object, plot, ...) {
   if (!inherits(plot$coordinates, "CoordEquatorial")) plot <- plot + coord_equatorial()
   plot$coordinates$lon_breaks_major <- object$breaks
   plot$coordinates$lon_breaks_minor <- object$minor_breaks

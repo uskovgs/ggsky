@@ -315,7 +315,7 @@ GeomSegmentGalactic <- ggplot2::ggproto(
 
 #' @importFrom ggplot2 ggplot_add
 #' @export
-ggplot_add.CoordGalactic <- function(object, plot, object_name) {
+ggplot_add.CoordGalactic <- function(object, plot, ...) {
   plot <- .ggplot_add_coord(object, plot)
   plot$labels$x <- ""
   plot$labels$y <- ""
