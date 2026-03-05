@@ -17,7 +17,7 @@ It includes custom coordinate systems and helper scales for longitude/latitude l
 
 ## Installation
 
-From GitHub:
+From GitHub: 
 
 ```r
 remotes::install_github("uskovgs/ggsky")
