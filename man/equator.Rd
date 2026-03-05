@@ -3,7 +3,7 @@
 \docType{data}
 \name{equator}
 \alias{equator}
-\title{Celestal equator is the great circle (decl=0deg)}
+\title{Celestial equator is the great circle with declination equal to 0 deg.}
 \format{
 data.frame
 \describe{
@@ -19,6 +19,6 @@ data.frame
 equator
 }
 \description{
-Celestal equator is the great circle (decl=0deg)
+Celestial equator is the great circle with declination equal to 0 deg.
 }
 \keyword{datasets}
