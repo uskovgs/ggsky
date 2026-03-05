@@ -3,11 +3,14 @@ Package: ggsky
 Title: Galactic and Equatorial Coordinate Implementation for 'ggplot2'
 Version: 0.1.0
 Authors@R: 
-    person("Grigory", "Uskov", , "uskov.russia@gmail.com", role = c("aut", "cre"))
+    person("Grigory", "Uskov", , "uskov.russia@gmail.com", role = c("aut", "cre", "cph"),
+           comment = c(ORCID = "0000-0002-0274-1350"))
 Description: Simple tools to draw sky maps in ggplot2 using galactic or
-    equatorial coordinates. Includes custom coordinate systems, grid labels,
-    and helpers for sky map breaks.
+    equatorial coordinates. Includes custom coordinate systems, grid
+    labels, and helpers for sky map breaks.
 License: MIT + file LICENSE
+URL: https://uskovgs.github.io/ggsky/
+BugReports: https://github.com/uskovgs/ggsky/issues
 Imports: 
     ggplot2,
     grid
@@ -20,6 +23,7 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.3.2
 Collate:
+    'data.R'
     'deps.R'
     'sky_utils.R'
     'sky_projection.R'
@@ -28,4 +32,5 @@ Collate:
     'coord_galactic.R'
     'coord_equatorial.R'
     'sky_scales.R'
-URL: https://uskovgs.github.io/ggsky/
+Depends: 
+    R (>= 3.5)

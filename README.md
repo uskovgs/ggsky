@@ -20,7 +20,7 @@ It includes custom coordinate systems and helper scales for longitude/latitude l
 From GitHub:
 
 ```r
-devtools::install_github("uskovgs/ggsky")
+remotes::install_github("uskovgs/ggsky")
 ```
 
 ## Quick examples
