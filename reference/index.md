@@ -9,7 +9,7 @@
 - [`coord_galactic()`](https://uskovgs.github.io/ggsky/reference/coord_galactic.md)
   : Galactic Hammer Coordinate System
 - [`equator`](https://uskovgs.github.io/ggsky/reference/equator.md) :
-  Celestal equator is the great circle (decl=0deg)
+  Celestial equator is the great circle with declination equal to 0 deg.
 - [`scale_eq_dec()`](https://uskovgs.github.io/ggsky/reference/scale_eq_dec.md)
   : Equatorial declination scale settings
 - [`scale_eq_ra()`](https://uskovgs.github.io/ggsky/reference/scale_eq_ra.md)
