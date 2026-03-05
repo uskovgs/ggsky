@@ -1,9 +1,16 @@
-# Coordinate systems
+# Get started
+
+`TL;DR: ggsky adds galactic and equatorial sky-map coordinates to ggplot2, so you can plot points, paths, and segments on a Hammer projection with readable sky-grid labels.`
 
 ``` r
 library(ggsky)
 library(ggplot2)
+theme_set(theme_light())
 ```
+
+## Coordinate Systems
+
+### Galactic Coordinate System
 
 ``` r
 ggplot() +
@@ -13,41 +20,53 @@ ggplot() +
 ![](example_files/figure-html/unnamed-chunk-2-1.png)
 
 ``` r
-
-ggplot() +
-  coord_equatorial()
-```
-
-![](example_files/figure-html/unnamed-chunk-2-2.png)
-
-``` r
 N <- 100
-df1 <- data.frame(
-  x = runif(N, 0, 360),
-  y = runif(N, -90, 90)
+df_gal <- data.frame(
+  l = runif(N, 0, 360), 
+  b = runif(N, -90, 90)
 )
 
-ggplot(df1, aes(x, y)) +
+ggplot(df_gal, aes(l, b)) +
   geom_point() +
-  coord_galactic() +
-  labs(title = "Galactic coordinate system") +
-  theme_light()
+  coord_galactic()
 ```
 
 ![](example_files/figure-html/unnamed-chunk-3-1.png)
 
-``` r
+Galactic longitude vs latitude.
 
-ggplot(df1, aes(x, y)) +
-  geom_point() +
-  labs(title = "Equatorial coordinate system") +
-  coord_equatorial() +
-  theme_light()
+### Equatorial coordinate system
+
+``` r
+ggplot() +
+  coord_equatorial()
 ```
 
-![](example_files/figure-html/unnamed-chunk-3-2.png)
+![](example_files/figure-html/unnamed-chunk-4-1.png)
 
-## `geom_path`
+``` r
+df1 <- data.frame(
+  ra = runif(N, 0, 360),
+  dec = runif(N, -90, 90)
+)
+
+ggplot(df1, aes(ra, dec)) +
+  geom_point() +
+  coord_equatorial()
+```
+
+![](example_files/figure-html/unnamed-chunk-5-1.png)
+
+Right ascension versus declination. Coordinates `ra` and `dec` must be
+in degrees.
+
+## Custom geoms
+
+### `geom_path`
+
+It projects geom_path between points along [Great
+circle](https://en.wikipedia.org/wiki/Great_circle), i.e., the shortest
+path on the sky map.
 
 ``` r
 df_path_gal <- data.frame(
@@ -58,30 +77,14 @@ df_path_gal <- data.frame(
 
 ggplot(df_path_gal, aes(l, b, group = g)) +
   geom_path(colour = "blue", linewidth = 1) +
-  coord_galactic() +
-  theme_light()
+  coord_galactic()
 ```
 
-![](example_files/figure-html/unnamed-chunk-4-1.png)
+![](example_files/figure-html/unnamed-chunk-6-1.png)
+
+### `geom_segment`
 
 ``` r
-df_path_eq <- data.frame(
-  ra = c(0, 60),
-  dec = c(30, 30),
-  g = 1
-)
-
-ggplot(df_path_eq, aes(ra, dec, group = g)) +
-  geom_path() +
-  coord_equatorial() +
-  scale_eq_ra(breaks = seq(0, 330, by = 30)) +
-  theme_light()
-```
-
-![](example_files/figure-html/unnamed-chunk-5-1.png)
-
-``` r
-# 5) Equatorial + geom_segment
 df_seg_eq <- data.frame(
   x = 30, y = -10,
   xend = 120, yend = 40
@@ -93,42 +96,43 @@ ggplot(df_seg_eq) +
     linewidth = 1, colour = "orange",
     arrow = arrow(type = "closed", length = unit(0.1, "inches"))
   ) +
-  coord_equatorial() +
-  theme_light()
+  coord_equatorial()
 ```
 
-![](example_files/figure-html/unnamed-chunk-6-1.png)
+![](example_files/figure-html/unnamed-chunk-7-1.png)
 
-## Plot sky equator on galactic plane
+### Custom scales
+
+[`scale_gal_lat()`](https://uskovgs.github.io/ggsky/reference/scale_gal_lat.md),
+[`scale_gal_lon()`](https://uskovgs.github.io/ggsky/reference/scale_gal_lon.md),
+[`scale_eq_ra()`](https://uskovgs.github.io/ggsky/reference/scale_eq_ra.md),
+[`scale_eq_dec()`](https://uskovgs.github.io/ggsky/reference/scale_eq_dec.md)
 
 ``` r
-library(dplyr)
-library(latex2exp)
-# devtools::install_github("uskovgs/xrayr")
-
-
-df1 <- data.frame(
-  l = c(120, 120, 0, 0, 0, 120),
-  b = c(0, 60, 60, 60, 0, 0)
+df_path_eq <- data.frame(
+  ra = c(0, 60),
+  dec = c(30, 30),
+  g = 1
 )
 
-coords_eq0 <- xrayr::ra_dec(0:359, rep(0.000001, 360))
-coords_eq0_gal <- xrayr::to_galactic(coords_eq0)
-df_eq0 <- data.frame(
-  l = coords_eq0_gal$l,
-  b = coords_eq0_gal$b,
-  ra = xrayr::ra(coords_eq0)
-)
+ggplot(df_path_eq, aes(ra, dec, group = g)) +
+  geom_path() +
+  coord_equatorial() +
+  scale_eq_ra(breaks = seq(0, 330, by = 30))
+```
 
-ggplot(df1, aes(l, b)) +
-  geom_path(colour = "blue", linewidth = 0.8) +
-  geom_path(
-    data = df_eq0, aes(l, b), colour = "red",
-    linetype = "dotted"
-  ) +
+![](example_files/figure-html/unnamed-chunk-8-1.png)
+
+## Plot celestial equator on galactic plane
+
+Use built-in dataset `equator`.
+
+``` r
+ggplot(equator, aes(l, b)) +
+  geom_path(linetype = "dotted", color = "red") +
   geom_text(
-    data = dplyr::filter(df_eq0, ra %% 30 == 0),
-    aes(label = latex2exp::TeX(paste0("$", ra, "^\\circ$"), output = "character")),
+    data = subset(equator, ra %% 30 == 0),
+    aes(label = sprintf("%d*degree", ra)),
     parse = TRUE,
     vjust = -0.5,
     size = 3,
@@ -136,3 +140,5 @@ ggplot(df1, aes(l, b)) +
   ) +
   coord_galactic()
 ```
+
+![](example_files/figure-html/unnamed-chunk-9-1.png)

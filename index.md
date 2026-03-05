@@ -15,7 +15,7 @@ longitude/latitude labels.
 From GitHub:
 
 ``` r
-devtools::install_github("uskovgs/ggsky")
+remotes::install_github("uskovgs/ggsky")
 ```
 
 ## Quick examples

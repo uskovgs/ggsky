@@ -33,7 +33,7 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/example.html">Coordinate systems</a></li>
+<li><a class="dropdown-item" href="../articles/example.html">Get started</a></li>
     <li><a class="dropdown-item" href="../articles/plot_xray_cat.html">Plot X-ray source catalog</a></li>
   </ul>
 </li>
@@ -68,11 +68,18 @@
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://uskovgs.github.io/ggsky/">ggsky</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span></code></pre></div>
-<div class="section level2">
-<h2 id="prepare-data">Prepare data<a class="anchor" aria-label="anchor" href="#prepare-data"></a>
-</h2>
-</div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/get_theme.html" class="external-link">theme_set</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_light</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>This vignette demonstrates how to plot the ARTSS1–5 X-ray source
+catalog in galactic coordinates.</p>
+<p>The dataset <code>artss15</code> is included in the package in a
+preprocessed form for reproducibility. It is based on the CDS/VizieR
+catalog <code>J/A+A/687/A183</code> (bibcode:
+<code>2024A&amp;A...687A.183S</code>).</p>
+<p>Main variables used below: - <code>l</code>, <code>b</code>: galactic
+longitude and latitude (degrees) - <code>flux</code>: X-ray flux
+(<code>erg/s/cm^2</code>)</p>
+<p>In the plot, point color represents <code>log10(flux)</code>.</p>
 <div class="section level2">
 <h2 id="plot">Plot<a class="anchor" aria-label="anchor" href="#plot"></a>
 </h2>
@@ -81,19 +88,14 @@
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_color_viridis_b</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
-<span>    title <span class="op">=</span> <span class="st">"ARTSS1–5 X-ray sources in equatorial coordinates"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"ARTSS1–5 X-ray sources in galactic coordinates"</span>,</span>
 <span>    caption <span class="op">=</span> <span class="st">"Catalog: CDS/VizieR J/A+A/687/A183 | bibcode: 2024A&amp;A...687A.183S"</span>,</span>
-<span>    color <span class="op">=</span> <span class="st">"log Fx\nerg/s/cm2"</span></span>
+<span>    color <span class="op">=</span> <span class="st">"log Fx\nerg/s/cm^2"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_light</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/coord_galactic.html">coord_galactic</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span></span>
-<span>    plot.background <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span></span>
-<span>  <span class="op">)</span> </span></code></pre></div>
+<span>  <span class="fu"><a href="../reference/coord_galactic.html">coord_galactic</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><img src="plot_xray_cat_files/figure-html/unnamed-chunk-2-1.png" class="r-plt" alt="" width="700"></p>
 </div>
-  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
-    </nav></aside>
+  </main>
 </div>
 
 

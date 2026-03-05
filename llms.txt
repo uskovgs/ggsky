@@ -15,7 +15,7 @@ longitude/latitude labels.
 From GitHub:
 
 ``` r
-devtools::install_github("uskovgs/ggsky")
+remotes::install_github("uskovgs/ggsky")
 ```
 
 ## Quick examples
@@ -51,6 +51,8 @@ devtools::install_github("uskovgs/ggsky")
   : Equatorial Hammer Coordinate System
 - [`coord_galactic()`](https://uskovgs.github.io/ggsky/reference/coord_galactic.md)
   : Galactic Hammer Coordinate System
+- [`equator`](https://uskovgs.github.io/ggsky/reference/equator.md) :
+  Celestal equator is the great circle (decl=0deg)
 - [`scale_eq_dec()`](https://uskovgs.github.io/ggsky/reference/scale_eq_dec.md)
   : Equatorial declination scale settings
 - [`scale_eq_ra()`](https://uskovgs.github.io/ggsky/reference/scale_eq_ra.md)
@@ -64,7 +66,6 @@ devtools::install_github("uskovgs/ggsky")
 
 ### All vignettes
 
-- [Coordinate
-  systems](https://uskovgs.github.io/ggsky/articles/example.md):
+- [Get started](https://uskovgs.github.io/ggsky/articles/example.md):
 - [Plot X-ray source
   catalog](https://uskovgs.github.io/ggsky/articles/plot_xray_cat.md):
