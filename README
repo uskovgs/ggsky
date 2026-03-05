@@ -1,7 +1,13 @@
-# ggsky
+
+
+<!-- badges: start -->
 
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 
+<!-- badges: end -->
+
+
+# ggsky
 `ggsky` is an extension for `ggplot2` to draw sky maps with:
 
 - galactic coordinates (`coord_galactic()`)
