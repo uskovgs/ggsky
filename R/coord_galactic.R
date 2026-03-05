@@ -9,10 +9,10 @@ CoordGalactic <- ggplot2::ggproto(
   setup_panel_params = function(self, scale_x, scale_y, params = list()) {
     list(
       x_range = c(0, 1), y_range = c(0, 1),
-      lat_breaks_major = self$lat_breaks_major %||% waiver(),
-      lat_breaks_minor = self$lat_breaks_minor %||% waiver(),
-      lon_breaks_major = self$lon_breaks_major %||% waiver(),
-      lon_breaks_minor = self$lon_breaks_minor %||% waiver()
+      lat_breaks_major = self$lat_breaks_major %||% ggplot2::waiver(),
+      lat_breaks_minor = self$lat_breaks_minor %||% ggplot2::waiver(),
+      lon_breaks_major = self$lon_breaks_major %||% ggplot2::waiver(),
+      lon_breaks_minor = self$lon_breaks_minor %||% ggplot2::waiver()
     )
   },
 
@@ -21,7 +21,7 @@ CoordGalactic <- ggplot2::ggproto(
     if (!nrow(data) || is.null(data$x) || is.null(data$y)) return(data)
     lon_deg <- (as.numeric(data$x) %% 360)
     lat_deg <- pmin(90, pmax(-90, as.numeric(data$y)))
-    p  <- proj_hammer(rad(lon_deg), rad(lat_deg))   # lon0 = 0°
+    p  <- proj_hammer(rad(lon_deg), rad(lat_deg))   # lon0 = 0 deg
     np <- to_npc(-p$x, p$y)                         # mirror X
     data$x <- np$x; data$y <- np$y
     data
@@ -82,8 +82,8 @@ CoordGalactic <- ggplot2::ggproto(
       grid::gpar(fill = NA, col = NA)
     }
     gp_bg$col <- NA
-    ggplot2:::ggname("galactic-grid-bg",
-                     grobTree(
+    .ggname("galactic-grid-bg",
+                     grid::grobTree(
                        grob_ellipse_fill(gp = gp_bg),
                        grob_grid(lat_breaks_major = panel_params$lat_breaks_major,
                                  lat_breaks_minor = panel_params$lat_breaks_minor,
@@ -128,8 +128,8 @@ CoordGalactic <- ggplot2::ggproto(
     if (!draw_lon_labels) lon_labels <- NULL
     if (!draw_lat_labels) lat_labels <- numeric(0)
 
-    ggplot2:::ggname("galactic-grid-fg",
-                     grobTree(
+    .ggname("galactic-grid-fg",
+                     grid::grobTree(
                        if (draw_mask) grob_outside_mask(inset = mask_inset, gp = gp_mask) else ggplot2::zeroGrob(),
                        grob_outline(gp = gp_outline),
                        grob_labels(lat_labels = lat_labels,
@@ -156,7 +156,7 @@ CoordGalactic <- ggplot2::ggproto(
     top <- if (!is.null(self$pad_top_pt)) {
       if (self$pad_top_pt > 0) grid::textGrob(" ", gp = grid::gpar(fontsize = self$pad_top_pt, col = NA)) else ggplot2::zeroGrob()
     } else if (show_lat && has_poles) {
-      self$.text_probe("90°", gp_lat)
+      self$.text_probe(expression(90 * degree), gp_lat)
     } else {
       ggplot2::zeroGrob()
     }
@@ -164,7 +164,7 @@ CoordGalactic <- ggplot2::ggproto(
     bottom <- if (!is.null(self$pad_bottom_pt)) {
       if (self$pad_bottom_pt > 0) grid::textGrob(" ", gp = grid::gpar(fontsize = self$pad_bottom_pt, col = NA)) else ggplot2::zeroGrob()
     } else if (show_lon) {
-      self$.text_probe("360°", gp_lon)
+      self$.text_probe(expression(360 * degree), gp_lon)
     } else {
       ggplot2::zeroGrob()
     }
@@ -178,7 +178,7 @@ CoordGalactic <- ggplot2::ggproto(
     left <- if (!is.null(self$pad_left_pt)) {
       if (self$pad_left_pt > 0) grid::textGrob(" ", gp = grid::gpar(fontsize = self$pad_left_pt, col = NA)) else ggplot2::zeroGrob()
     } else if (show_lat) {
-      self$.text_probe("\u221290\u00b0", gp_lat)
+      self$.text_probe(expression(-90 * degree), gp_lat)
     } else {
       ggplot2::zeroGrob()
     }
@@ -186,7 +186,7 @@ CoordGalactic <- ggplot2::ggproto(
     right <- if (!is.null(self$pad_right_pt)) {
       if (self$pad_right_pt > 0) grid::textGrob(" ", gp = grid::gpar(fontsize = self$pad_right_pt, col = NA)) else ggplot2::zeroGrob()
     } else if (show_lat) {
-      self$.text_probe("\u221290\u00b0", gp_lat)
+      self$.text_probe(expression(-90 * degree), gp_lat)
     } else {
       ggplot2::zeroGrob()
     }
@@ -194,22 +194,42 @@ CoordGalactic <- ggplot2::ggproto(
   }
 )
 
-#' Title
+#' Galactic Hammer Coordinate System
 #'
-#' @param clip
-#' @param label_offset_lon
-#' @param label_offset_lat
-#' @param munch_deg
-#' @param pad_top_pt
-#' @param pad_bottom_pt
-#' @param pad_left_pt
-#' @param pad_right_pt
-#' @param clip_on_boundaries
+#' Coordinate system for sky maps in galactic coordinates using a
+#' Hammer-Aitoff projection.
 #'
-#' @returns
+#' @param clip Character scalar. Passed to `ggplot2` coordinate clipping
+#'   (`"on"` or `"off"`).
+#' @param label_offset_lon Numeric scalar in npc units. Vertical offset for
+#'   galactic-longitude labels relative to the equator.
+#' @param label_offset_lat Numeric scalar in npc units. Outward offset for
+#'   galactic-latitude labels relative to the projection outline.
+#' @param munch_deg Numeric scalar. Maximum angular step (in degrees) used to
+#'   segment paths and polygon edges along great circles before projection.
+#' @param pad_top_pt,pad_bottom_pt,pad_left_pt,pad_right_pt Optional numeric
+#'   scalars (points) used to reserve external space for axis text. `NULL`
+#'   enables automatic sizing.
+#' @param clip_on_boundaries Logical scalar. If `TRUE`, draws an outside mask
+#'   so geoms are visually clipped to the projection boundary.
+#'
+#' @returns A `ggplot2` coordinate object (a `ggproto` instance inheriting from
+#'   `CoordGalactic`) to be added to a plot.
 #' @export
 #'
 #' @examples
+#' library(ggplot2)
+#'
+#' df <- data.frame(
+#'   lon = c(0, 30, 60, 90, 120),
+#'   lat = c(-20, -5, 10, 25, 15)
+#' )
+#'
+#' ggplot(df, aes(lon, lat)) +
+#'   geom_path() +
+#'   coord_galactic() +
+#'   scale_gal_lon(breaks = seq(0, 330, by = 30)) +
+#'   scale_gal_lat(breaks = seq(-60, 60, by = 30))
 coord_galactic <- function(clip = "on",
                            label_offset_lon = 0.025,
                            label_offset_lat = 0.035,
@@ -293,8 +313,10 @@ GeomSegmentGalactic <- ggplot2::ggproto(
   }
 )
 
+#' @importFrom ggplot2 ggplot_add
+#' @export
 ggplot_add.CoordGalactic <- function(object, plot, object_name) {
-  plot <- ggplot2:::ggplot_add.Coord(object, plot, object_name)
+  plot <- .ggplot_add_coord(object, plot)
   plot$labels$x <- ""
   plot$labels$y <- ""
   for (i in seq_along(plot$layers)) {

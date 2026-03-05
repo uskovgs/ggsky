@@ -36,8 +36,8 @@ CoordEquatorial <- ggplot2::ggproto(
     if (!draw_lon_labels) lon_labels <- NULL
     if (!draw_lat_labels) lat_labels <- numeric(0)
 
-    ggplot2:::ggname("equatorial-grid-fg",
-      grobTree(
+    .ggname("equatorial-grid-fg",
+      grid::grobTree(
         if (draw_mask) grob_outside_mask(inset = mask_inset, gp = gp_mask) else ggplot2::zeroGrob(),
         grob_outline(gp = gp_outline),
         grob_labels(
@@ -55,22 +55,42 @@ CoordEquatorial <- ggplot2::ggproto(
   }
 )
 
-#' Title
+#' Equatorial Hammer Coordinate System
 #'
-#' @param clip
-#' @param label_offset_lon
-#' @param label_offset_lat
-#' @param munch_deg
-#' @param pad_top_pt
-#' @param pad_bottom_pt
-#' @param pad_left_pt
-#' @param pad_right_pt
-#' @param clip_on_boundaries
+#' Coordinate system for sky maps in equatorial coordinates using a
+#' Hammer-Aitoff projection.
 #'
-#' @returns
+#' @param clip Character scalar. Passed to `ggplot2` coordinate clipping
+#'   (`"on"` or `"off"`).
+#' @param label_offset_lon Numeric scalar in npc units. Vertical offset for
+#'   right-ascension labels relative to the equator.
+#' @param label_offset_lat Numeric scalar in npc units. Outward offset for
+#'   declination labels relative to the projection outline.
+#' @param munch_deg Numeric scalar. Maximum angular step (in degrees) used to
+#'   segment paths and polygon edges along great circles before projection.
+#' @param pad_top_pt,pad_bottom_pt,pad_left_pt,pad_right_pt Optional numeric
+#'   scalars (points) used to reserve external space for axis text. `NULL`
+#'   enables automatic sizing.
+#' @param clip_on_boundaries Logical scalar. If `TRUE`, draws an outside mask
+#'   so geoms are visually clipped to the projection boundary.
+#'
+#' @returns A `ggplot2` coordinate object (a `ggproto` instance inheriting from
+#'   `CoordEquatorial`) to be added to a plot.
 #' @export
 #'
 #' @examples
+#' library(ggplot2)
+#'
+#' df <- data.frame(
+#'   ra = c(0, 30, 60, 90, 120),
+#'   dec = c(-20, -5, 10, 25, 15)
+#' )
+#'
+#' ggplot(df, aes(ra, dec)) +
+#'   geom_path() +
+#'   coord_equatorial() +
+#'   scale_eq_ra(breaks = seq(0, 330, by = 30)) +
+#'   scale_eq_dec(breaks = seq(-60, 60, by = 30))
 coord_equatorial <- function(clip = "on",
                              label_offset_lon = 0.025,
                              label_offset_lat = 0.035,
@@ -94,16 +114,27 @@ coord_equatorial <- function(clip = "on",
   )
 }
 
-scale_eq_dec <- function(breaks = waiver(), minor_breaks = waiver()) {
-  structure(list(breaks = breaks, minor_breaks = minor_breaks), class = "sky_scale_dec")
-}
-
-scale_eq_ra <- function(breaks = waiver(), minor_breaks = waiver()) {
+#' Equatorial right-ascension scale settings
+#'
+#' @param breaks,minor_breaks Break specification passed to `coord_equatorial()`.
+#' @returns An object consumed by `ggplot_add()`.
+#' @export
+scale_eq_ra <- function(breaks = ggplot2::waiver(), minor_breaks = ggplot2::waiver()) {
   structure(list(breaks = breaks, minor_breaks = minor_breaks), class = "sky_scale_ra")
 }
 
+#' Equatorial declination scale settings
+#'
+#' @param breaks,minor_breaks Break specification passed to `coord_equatorial()`.
+#' @returns An object consumed by `ggplot_add()`.
+#' @export
+scale_eq_dec <- function(breaks = ggplot2::waiver(), minor_breaks = ggplot2::waiver()) {
+  structure(list(breaks = breaks, minor_breaks = minor_breaks), class = "sky_scale_dec")
+}
+
+#' @export
 ggplot_add.CoordEquatorial <- function(object, plot, object_name) {
-  plot <- ggplot2:::ggplot_add.Coord(object, plot, object_name)
+  plot <- .ggplot_add_coord(object, plot)
   plot$labels$x <- ""
   plot$labels$y <- ""
   for (i in seq_along(plot$layers)) {
@@ -116,6 +147,7 @@ ggplot_add.CoordEquatorial <- function(object, plot, object_name) {
   plot
 }
 
+#' @export
 ggplot_add.sky_scale_dec <- function(object, plot, object_name) {
   if (!inherits(plot$coordinates, "CoordEquatorial")) plot <- plot + coord_equatorial()
   plot$coordinates$lat_breaks_major <- object$breaks
@@ -123,6 +155,7 @@ ggplot_add.sky_scale_dec <- function(object, plot, object_name) {
   plot
 }
 
+#' @export
 ggplot_add.sky_scale_ra <- function(object, plot, object_name) {
   if (!inherits(plot$coordinates, "CoordEquatorial")) plot <- plot + coord_equatorial()
   plot$coordinates$lon_breaks_major <- object$breaks

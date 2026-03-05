@@ -1,16 +1,30 @@
 Type: Package
 Package: ggsky
-Title: What the Package Does (Title Case)
+Title: Galactic and Equatorial Coordinate Implementation for 'ggplot2'
 Version: 0.1.0
 Authors@R: 
-    person("Jane", "Doe", , "jane@example.com", role = c("aut", "cre"))
-Description: More about what it does (maybe more than one line).
-    Continuation lines should be indented.
+    person("Grigory", "Uskov", , "uskov.russia@gmail.com", role = c("aut", "cre"))
+Description: Simple tools to draw sky maps in ggplot2 using galactic or
+    equatorial coordinates. Includes custom coordinate systems, grid labels,
+    and helpers for sky map breaks.
 License: MIT + file LICENSE
-Encoding: UTF-8
-LazyData: true
+Imports: 
+    ggplot2,
+    grid
 Suggests: 
     knitr,
     rmarkdown
-VignetteBuilder: knitr
+VignetteBuilder: 
+    knitr
+Encoding: UTF-8
+LazyData: true
 RoxygenNote: 7.3.2
+Collate:
+    'deps.R'
+    'sky_utils.R'
+    'sky_projection.R'
+    'sky_segmentize.R'
+    'sky_grobs.R'
+    'coord_galactic.R'
+    'coord_equatorial.R'
+    'sky_scales.R'

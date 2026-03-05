@@ -3,7 +3,18 @@ is_waiver   <- function(x) inherits(x, "waiver")
 rad         <- function(d) d * pi/180
 wrap_pi     <- function(a) { a <- (a + pi) %% (2*pi) - pi; ifelse(a <= -pi, a + 2*pi, a) }
 .is_blank   <- function(el) inherits(el, "element_blank")
-.calc_el    <- function(name, theme) tryCatch(ggplot2:::calc_element(name, theme), error = function(e) NULL)
+.calc_el    <- function(name, theme) tryCatch(ggplot2::calc_element(name, theme), error = function(e) NULL)
+.ggname     <- function(prefix, grob) {
+  grob$name <- grid::grobName(grob, prefix)
+  grob
+}
+.ggplot_add_coord <- function(object, plot) {
+  if (!isTRUE(plot$coordinates$default)) {
+    message("Coordinate system already present. Adding new coordinate system, which will replace the existing one.")
+  }
+  plot$coordinates <- object
+  plot
+}
 
 .line_gp <- function(el, default_col = "grey35", default_lwd = 0.9, default_lty = 1) {
   grid::gpar(
@@ -35,8 +46,12 @@ wrap_pi     <- function(a) { a <- (a + pi) %% (2*pi) - pi; ifelse(a <= -pi, a + 
 .lat_ticks     <- function(step) { k <- floor(90/step); seq(-k*step, k*step, by = step) }
 .setdiff_near  <- function(x, y, tol = 1e-9) { if (!length(y)) return(x); x[vapply(x, function(xi) all(abs(xi - y) > tol), logical(1))] }
 near_seam      <- function(L, center = .center_deg, tol = 1e-9) abs(((L - center) %% 360) - 180) < tol
-label_lon_mirr <- function(rel_deg) paste0(ifelse(rel_deg <= 0, abs(rel_deg), 360 - rel_deg), "°")
-fmt_deg_lat    <- function(v) paste0(ifelse(v < 0, "\u2212", ""), abs(v), "°")
+fmt_deg <- function(v) as.expression(lapply(v, function(x) bquote(.(x) * degree)))
+label_lon_mirr <- function(rel_deg) {
+  vals <- ifelse(rel_deg <= 0, abs(rel_deg), 360 - rel_deg)
+  fmt_deg(vals)
+}
+fmt_deg_lat <- function(v) fmt_deg(v)
 fmt_ra_hours   <- function(deg) {
   h <- (deg / 15) %% 24
   r <- round(h)

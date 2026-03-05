@@ -7,9 +7,9 @@ grob_outline <- function(eps = 1e-6, n = 2000, gp = grid::gpar(col = "black", lw
   pL <- proj_hammer(rad(lL), rad(b))
   pR <- proj_hammer(rad(lR), rad(b))
   npL <- to_npc(-pL$x, pL$y); npR <- to_npc(-pR$x, pR$y)
-  grobTree(
-    polylineGrob(unit(npL$x, "npc"), unit(npL$y, "npc"), gp = gp),
-    polylineGrob(unit(npR$x, "npc"), unit(npR$y, "npc"), gp = gp)
+  grid::grobTree(
+    grid::polylineGrob(grid::unit(npL$x, "npc"), grid::unit(npL$y, "npc"), gp = gp),
+    grid::polylineGrob(grid::unit(npR$x, "npc"), grid::unit(npR$y, "npc"), gp = gp)
   )
 }
 
@@ -21,9 +21,9 @@ grob_ellipse_fill <- function(eps = 1e-6, n = 2000, gp = grid::gpar(fill = NA, c
   pR <- proj_hammer(rad(lR), rad(b))
   npL <- to_npc(-pL$x, pL$y)
   npR <- to_npc(-pR$x, pR$y)
-  polygonGrob(
-    x = unit(c(npL$x, rev(npR$x)), "npc"),
-    y = unit(c(npL$y, rev(npR$y)), "npc"),
+  grid::polygonGrob(
+    x = grid::unit(c(npL$x, rev(npR$x)), "npc"),
+    y = grid::unit(c(npL$y, rev(npR$y)), "npc"),
     gp = gp
   )
 }
@@ -46,9 +46,9 @@ grob_outside_mask <- function(eps = 1e-6, n = 2000, inset = 0, gp = grid::gpar(f
   x_ell <- shr$x
   y_ell <- shr$y
 
-  pathGrob(
-    x = unit(c(x_outer, x_ell), "npc"),
-    y = unit(c(y_outer, y_ell), "npc"),
+  grid::pathGrob(
+    x = grid::unit(c(x_outer, x_ell), "npc"),
+    y = grid::unit(c(y_outer, y_ell), "npc"),
     id = c(rep(1L, length(x_outer)), rep(2L, length(x_ell))),
     rule = "evenodd",
     gp = gp
@@ -73,9 +73,9 @@ grob_parallel <- function(b_deg, eps = 1e-6, n = 721, gp = grid::gpar()) {
   pL <- proj_hammer(rad(lonL), rad(b_deg))
   pR <- proj_hammer(rad(lonR), rad(b_deg))
   npL <- to_npc(-pL$x, pL$y); npR <- to_npc(-pR$x, pR$y)
-  grobTree(
-    polylineGrob(unit(npL$x, "npc"), unit(npL$y, "npc"), gp = gp),
-    polylineGrob(unit(npR$x, "npc"), unit(npR$y, "npc"), gp = gp)
+  grid::grobTree(
+    grid::polylineGrob(grid::unit(npL$x, "npc"), grid::unit(npL$y, "npc"), gp = gp),
+    grid::polylineGrob(grid::unit(npR$x, "npc"), grid::unit(npR$y, "npc"), gp = gp)
   )
 }
 
@@ -84,15 +84,15 @@ grob_meridian <- function(l_deg, eps = 1e-6, n = 361, gp = grid::gpar()) {
   lat <- seq(-90 + eps, 90 - eps, length.out = n)
   p   <- proj_hammer(rad(L), rad(lat))
   np  <- to_npc(-p$x, p$y)
-  polylineGrob(unit(np$x, "npc"), unit(np$y, "npc"), gp = gp)
+  grid::polylineGrob(grid::unit(np$x, "npc"), grid::unit(np$y, "npc"), gp = gp)
 }
 
 # ---- labels (in npc) ---------------------------------------------------------
 grob_labels <- function(lat_labels,
-                        lon_labels_abs = waiver(),
+                        lon_labels_abs = ggplot2::waiver(),
                         major_step = 30,
                         eps = 1e-6,
-                        lon_label_fn = function(v) paste0(v, "°"),
+                        lon_label_fn = fmt_deg,
                         gp_lon = grid::gpar(col = "grey25"),
                         gp_lat = grid::gpar(col = "grey25"),
                         off_lon = 0.025,   # below the equator (npc)
@@ -112,24 +112,24 @@ grob_labels <- function(lat_labels,
     parts <- list()
     if (any(i_mid)) {
       parts[[length(parts) + 1]] <- grid::textGrob(
-        labels[i_mid], x = unit(np$x[i_mid], "npc"), y = unit(y[i_mid], "npc"),
+        labels[i_mid], x = grid::unit(np$x[i_mid], "npc"), y = grid::unit(y[i_mid], "npc"),
         just = "center", gp = gp_lon
       )
     }
     if (any(i_left)) {
       parts[[length(parts) + 1]] <- grid::textGrob(
-        labels[i_left], x = unit(np$x[i_left] + nudge, "npc"), y = unit(y[i_left], "npc"),
+        labels[i_left], x = grid::unit(np$x[i_left] + nudge, "npc"), y = grid::unit(y[i_left], "npc"),
         just = "left", gp = gp_lon
       )
     }
     if (any(i_right)) {
       parts[[length(parts) + 1]] <- grid::textGrob(
-        labels[i_right], x = unit(np$x[i_right] - nudge, "npc"), y = unit(y[i_right], "npc"),
+        labels[i_right], x = grid::unit(np$x[i_right] - nudge, "npc"), y = grid::unit(y[i_right], "npc"),
         just = "right", gp = gp_lon
       )
     }
 
-    if (!length(parts)) ggplot2::zeroGrob() else do.call(grobTree, parts)
+    if (!length(parts)) ggplot2::zeroGrob() else do.call(grid::grobTree, parts)
   }
 
   # ----- LONGITUDES -----
@@ -155,10 +155,10 @@ grob_labels <- function(lat_labels,
     pl <- proj_hammer(rad(lL), rad(lat_mid)); nl <- to_npc(-pl$x, pl$y)
     oR <- .offset_outside_npc(nr$x, nr$y, off = off_lat)
     oL <- .offset_outside_npc(nl$x, nl$y, off = off_lat)
-    grobTree(
-      grid::textGrob(fmt_deg_lat(lat_mid), x = unit(oR$x,"npc"), y = unit(oR$y,"npc"),
+    grid::grobTree(
+      grid::textGrob(fmt_deg_lat(lat_mid), x = grid::unit(oR$x,"npc"), y = grid::unit(oR$y,"npc"),
                just = "left", gp = gp_lat),
-      grid::textGrob(fmt_deg_lat(lat_mid), x = unit(oL$x,"npc"), y = unit(oL$y,"npc"),
+      grid::textGrob(fmt_deg_lat(lat_mid), x = grid::unit(oL$x,"npc"), y = grid::unit(oL$y,"npc"),
                just = "right", gp = gp_lat)
     )
   } else ggplot2::zeroGrob()
@@ -166,17 +166,17 @@ grob_labels <- function(lat_labels,
   grob_poles <- if (length(lat_pole)) {
     pp <- proj_hammer(rad(.center_deg), rad(lat_pole)); np <- to_npc(-pp$x, pp$y)
     o  <- .offset_outside_npc(np$x, np$y, off = off_lat)
-    grid::textGrob(fmt_deg_lat(lat_pole), x = unit(o$x,"npc"), y = unit(o$y,"npc"),
+    grid::textGrob(fmt_deg_lat(lat_pole), x = grid::unit(o$x,"npc"), y = grid::unit(o$y,"npc"),
              just = "center", gp = gp_lat)
   } else ggplot2::zeroGrob()
 
-  grobTree(grob_lons, grob_lats_mid, grob_poles)
+  grid::grobTree(grob_lons, grob_lats_mid, grob_poles)
 }
 
 
 # ---- grid assembler (respects theme and waiver/NULL) -------------------------
-grob_grid <- function(lat_breaks_major = waiver(), lat_breaks_minor = waiver(),
-                      lon_breaks_major_abs = waiver(), lon_breaks_minor_abs = waiver(),
+grob_grid <- function(lat_breaks_major = ggplot2::waiver(), lat_breaks_minor = ggplot2::waiver(),
+                      lon_breaks_major_abs = ggplot2::waiver(), lon_breaks_minor_abs = ggplot2::waiver(),
                       eps = 1e-6, default_major = 30, default_minor = 15,
                       theme = ggplot2::theme_get()) {
   el_maj_x <- .calc_el("panel.grid.major.x", theme)
@@ -242,9 +242,9 @@ grob_grid <- function(lat_breaks_major = waiver(), lat_breaks_minor = waiver(),
   if (draw_lon_minor && length(lon_minor)) mers <- c(mers, lapply(lon_minor, grob_meridian, eps = eps, gp = gp_min_x))
   if (draw_lon_major && length(lon_major)) mers <- c(mers, lapply(lon_major, grob_meridian, eps = eps, gp = gp_maj_x))
 
-  grobTree(
-    if (length(pars)) do.call(grobTree, pars) else ggplot2::zeroGrob(),
-    if (length(mers)) do.call(grobTree, mers) else ggplot2::zeroGrob(),
+  grid::grobTree(
+    if (length(pars)) do.call(grid::grobTree, pars) else ggplot2::zeroGrob(),
+    if (length(mers)) do.call(grid::grobTree, mers) else ggplot2::zeroGrob(),
     grob_outline(eps = eps, gp = gp_outline)
   )
 }
