@@ -28,3 +28,4 @@ Collate:
     'coord_galactic.R'
     'coord_equatorial.R'
     'sky_scales.R'
+URL: https://uskovgs.github.io/ggsky/
