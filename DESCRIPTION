@@ -24,7 +24,6 @@ LazyData: true
 RoxygenNote: 7.3.2
 Collate:
     'data.R'
-    'deps.R'
     'sky_utils.R'
     'sky_projection.R'
     'sky_segmentize.R'
