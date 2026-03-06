@@ -5,7 +5,7 @@ Version: 0.1.0
 Authors@R: 
     person("Grigory", "Uskov", , "uskov.russia@gmail.com", role = c("aut", "cre", "cph"),
            comment = c(ORCID = "0000-0002-0274-1350"))
-Description: Simple tools to draw sky maps in ggplot2 using galactic or
+Description: Simple tools to draw sky maps in 'ggplot2' using galactic or
     equatorial coordinates. Includes custom coordinate systems, grid
     labels, and helpers for sky map breaks.
 License: MIT + file LICENSE
