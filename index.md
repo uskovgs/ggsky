@@ -1,5 +1,7 @@
 # ggsky
 
+# ggsky
+
 `ggsky` is an extension for `ggplot2` to draw sky maps with:
 
 - galactic coordinates

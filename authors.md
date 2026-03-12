@@ -8,7 +8,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/uskovgs/ggsky/blob/main/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/uskovgs/ggsky/blob/v0.1.0/DESCRIPTION)
 
 Uskov G (2026). *ggsky: Galactic and Equatorial Coordinate
 Implementation for 'ggplot2'*. R package version 0.1.0,
