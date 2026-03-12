@@ -13,8 +13,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-# ggsky
-
 <!-- badges: start -->
 [![CRAN status](https://www.r-pkg.org/badges/version/ggsky)](https://CRAN.R-project.org/package=ggsky)
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
